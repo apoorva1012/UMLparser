@@ -33,7 +33,7 @@ public class Parser {
         cuArray = getCuArray(inPath);
         buildMap(cuArray);
         for (CompilationUnit cu : cuArray)
-            yumlCode += parser(cu);
+            yumlCode += parse(cu);
         yumlCode += parseAdditions();
         yumlCode = yumlCodeUniquer(yumlCode);
         System.out.println("Unique Code: " + yumlCode);
