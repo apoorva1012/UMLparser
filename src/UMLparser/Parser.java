@@ -24,6 +24,16 @@ public class Parser {
         yumlCode = "";
 	}
 	
+	public void start() throws Exception {
+        cuArray = getCuArray(inPath);
+        buildMap(cuArray);
+        for (CompilationUnit cu : cuArray)
+            yumlCode += parser(cu);
+        yumlCode += parseAdditions();
+        yumlCode = yumlCodeUniquer(yumlCode);
+        System.out.println("Unique Code: " + yumlCode);
+        GenerateDiagram.generatePNG(yumlCode, outPath);
+    }
 	
 	
 }
