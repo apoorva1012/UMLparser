@@ -67,6 +67,16 @@ public class Parser {
         return result;
     }
 	
+    @SuppressWarnings("unused")
+    private void printMaps() {
+        System.out.println("Map:");
+        Set<String> keys = mapClassConn.keySet(); // get all keys
+        for (String i : keys) {
+            System.out.println(i + "->" + mapClassConn.get(i));
+        }
+        System.out.println("---");
+    }
+    
 	private ArrayList<CompilationUnit> getCuArray(String inPath)
             throws Exception {
         File folder = new File(inPath);
