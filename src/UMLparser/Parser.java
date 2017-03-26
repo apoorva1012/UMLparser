@@ -21,7 +21,7 @@ public class Parser {
     String yumlCode;
     ArrayList<CompilationUnit> cuArray;
 	
-	public Parser(String inPath, String outPath) {
+	public Parser(String inPath, String outFile) {
 		this.inPath = inPath;
         this.outPath = outFile + ".png";
         map = new HashMap<String, Boolean>();
