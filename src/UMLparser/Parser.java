@@ -66,4 +66,28 @@ public class Parser {
         }
         return result;
     }
+	
+	private ArrayList<CompilationUnit> getCuArray(String inPath)
+            throws Exception {
+        File folder = new File(inPath);
+
+        File[] files = folder.listFiles();
+        Arrays.sort(files);
+
+        ArrayList<CompilationUnit> cuArray = new ArrayList<CompilationUnit>();
+        for (final File f : files) {
+            if (f.isFile() && f.getName().endsWith(".java")) {
+                FileInputStream in = new FileInputStream(f);
+                CompilationUnit cu;
+                try {
+                    cu = JavaParser.parse(in);
+                    cuArray.add(cu);
+                } finally {
+                    in.close();
+                }
+            }
+        }
+        return cuArray;
+    }
+	
 }
