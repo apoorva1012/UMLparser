@@ -90,4 +90,14 @@ public class Parser {
         return cuArray;
     }
 	
+	private void buildMap(ArrayList<CompilationUnit> cuArray) {
+        for (CompilationUnit cu : cuArray) {
+            List<TypeDeclaration<?>> cl = cu.getTypes();
+            for (Node n : cl) {
+                ClassOrInterfaceDeclaration coi = (ClassOrInterfaceDeclaration) n;
+                map.put(coi.getNameAsString(), coi.isInterface()); // false is class,
+                // true is interface
+            }
+        }
+    }
 }
