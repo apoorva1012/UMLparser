@@ -4,7 +4,7 @@ import java.net.*;
 import java.io.*;
 
 public class CreateImage {
-	public static void generatePNG(String grammar, String outPath) throws MalformedURLException {
+	public static void generatePNG(String grammar, String outPath) throws IOException {
 		String webLink = null;
 		
 			webLink = "https://yuml.me/diagram/plain/class/" + URLEncoder.encode(grammar, "UTF-8") + ".png";
