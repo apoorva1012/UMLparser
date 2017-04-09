@@ -8,10 +8,14 @@ public class CreateImage {
 		String webLink = null;
 		try {
 			webLink = "https://yuml.me/diagram/plain/class/" + URLEncoder.encode(grammar, "UTF-8") + ".png";
+			URL url = new URL(webLink);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Accept", "application/json");
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        URL url = new URL(webLink);
+        
 	}
 }
