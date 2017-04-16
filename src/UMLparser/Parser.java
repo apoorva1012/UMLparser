@@ -21,7 +21,7 @@ public class Parser {
     String yumlCode;
     ArrayList<CompilationUnit> cuArray;
 	
-	public Parser(String inPath, String outFile) {
+	Parser(String inPath, String outFile) {
 		this.inPath = inPath;
         this.outPath = outFile + ".png";
         map = new HashMap<String, Boolean>();
@@ -37,7 +37,7 @@ public class Parser {
         yumlCode += parseAdditions();
         yumlCode = yumlCodeUniquer(yumlCode);
         System.out.println("Unique Code: " + yumlCode);
-        GenerateDiagram.generatePNG(yumlCode, outPath);
+        CreateImage.generatePNG(yumlCode, outPath);
     }
 	
 	private String yumlCodeUniquer(String code) {

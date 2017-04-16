@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="/Users/apoorva/Downloads/plantuml.jar"/>
-	<classpathentry kind="lib" path="/Users/apoorva/Downloads/javaparser-core-3.0.1.jar"/>
+	<classpathentry kind="lib" path="/Users/apoorva/Desktop/SJSU/CMPE202/UMLparser/dependencies/plantuml.jar"/>
+	<classpathentry kind="lib" path="/Users/apoorva/Desktop/SJSU/CMPE202/UMLparser/dependencies/javaparser-core-3.2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
