@@ -22,7 +22,10 @@ public class CreateImage {
             OutputStream outputStream = new FileOutputStream(new File(outPath));
             int read = 0;
             byte[] bytes = new byte[1024];
-           
+
+            while ((read = conn.getInputStream().read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
             outputStream.close();
             conn.disconnect();
         } catch (MalformedURLException e) {
