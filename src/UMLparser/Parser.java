@@ -67,6 +67,31 @@ public class Parser {
         return result;
     }
 	
+	private String parser(CompilationUnit cu) {
+        String result = "";
+        String className = "";
+        String classShortName = "";
+        String methods = "";
+        String fields = "";
+        String additions = ",";
+        
+        return "";
+	}    
+	
+	private String changeBrackets(String foo) {
+        foo = foo.replace("[", "(");
+        foo = foo.replace("]", ")");
+        foo = foo.replace("<", "(");
+        foo = foo.replace(">", ")");
+        return foo;
+    }
+	
+	private String aToSymScope(String stringScope) {
+        if(stringScope.equals("private")) return "-";
+        if(stringScope.equals("public")) return "+";
+        return "";        
+    }
+	
     @SuppressWarnings("unused")
     private void printMaps() {
         System.out.println("Map:");
