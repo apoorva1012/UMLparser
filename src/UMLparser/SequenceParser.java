@@ -119,7 +119,7 @@ public class SequenceParser {
         return cuArray;
     }
 
-    private String generateDiagram(String source) throws IOException {
+    private DiagramDescription generateDiagram(String source) throws IOException {
 
         OutputStream png = new FileOutputStream(outPath);
         SourceStringReader reader = new SourceStringReader(source);
