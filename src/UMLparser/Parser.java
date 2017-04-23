@@ -66,7 +66,8 @@ public class Parser {
         }
         return result;
     }
-	
+	  
+
 	private String parser(CompilationUnit cu) {
         String result = "";
         String className = "";
@@ -74,9 +75,204 @@ public class Parser {
         String methods = "";
         String fields = "";
         String additions = ",";
-        
-        return "";
-	}    
+
+        ArrayList<String> makeFieldPublic = new ArrayList<String>();
+        List<TypeDeclaration<?>> ltd = cu.getTypes();
+        Node node = ltd.get(0); // assuming no nested classes
+
+        // Get className
+        ClassOrInterfaceDeclaration coi = (ClassOrInterfaceDeclaration) node;
+        if (coi.isInterface()) {
+            className = "[" + "<<interface>>;";
+        } else {
+            className = "[";
+        }
+        className += coi.getName();
+        classShortName = coi.getName().toString();
+
+        // Parsing Methods
+        boolean nextParam = false;
+        for (Object o : ((TypeDeclaration) node).getMembers()) {
+            // Get Methods
+            BodyDeclaration<?> bd = (BodyDeclaration<?>) o;
+            if (bd instanceof ConstructorDeclaration) {
+                ConstructorDeclaration cd = ((ConstructorDeclaration) bd);
+                if (cd.getDeclarationAsString().startsWith("public")
+                        && !coi.isInterface()) {
+                    if (nextParam)
+                        methods += ";";
+                    methods += "+" + cd.getName() + "(";
+                    for (Object gcn : cd.getChildNodes()) {
+                        if (gcn instanceof Parameter) {
+                            Parameter paramCast = (Parameter) gcn;
+                            String paramClass = paramCast.getType().toString();
+                            String paramName = paramCast.getChildNodes()
+                                    .get(0).toString();
+                            methods += paramName + ":" + paramClass;
+                            if (map.containsKey(paramClass)
+                                    && !map.get(classShortName)) {
+                                additions += "[" + classShortName
+                                        + "] uses -.->";
+                                if (map.get(paramClass))
+                                    additions += "[<<interface>>;" + paramClass
+                                            + "]";
+                                else
+                                    additions += "[" + paramClass + "]";
+                            }
+                            additions += ",";
+                        }
+                    }
+                    methods += ")";
+                    nextParam = true;
+                }
+            }
+        }
+        for (Object o : ((TypeDeclaration) node).getMembers()) {
+            BodyDeclaration<?> bd = (BodyDeclaration<?>) o;
+            if (bd instanceof MethodDeclaration) {
+                MethodDeclaration md = ((MethodDeclaration) bd);
+                // Get only public methods
+                if (md.getDeclarationAsString().startsWith("public")
+                        && !coi.isInterface()) {
+                    // Identify Setters and Getters
+                    if (md.getNameAsString().startsWith("set")
+                            || md.getNameAsString().startsWith("get")) {
+                        String varName = md.getNameAsString().substring(3);
+                        makeFieldPublic.add(varName.toLowerCase());
+                    } else {
+                        if (nextParam)
+                            methods += ";";
+                        methods += "+" + md.getName() + "(";
+                        for (Object gcn : md.getChildNodes()) {
+                            if (gcn instanceof Parameter) {
+                                Parameter paramCast = (Parameter) gcn;
+                                String paramClass = paramCast.getType()
+                                        .toString();
+                                String paramName = paramCast.getChildNodes()
+                                        .get(0).toString();
+                                methods += paramName + ":" + paramClass;
+                                if (map.containsKey(paramClass)
+                                        && !map.get(classShortName)) {
+                                    additions += "[" + classShortName
+                                            + "] uses -.->";
+                                    if (map.get(paramClass))
+                                        additions += "[<<interface>>;"
+                                                + paramClass + "]";
+                                    else
+                                        additions += "[" + paramClass + "]";
+                                }
+                                additions += ",";
+                            } else {
+                                String methodBody[] = gcn.toString().split(" ");
+                                for (String foo : methodBody) {
+                                    if (map.containsKey(foo)
+                                            && !map.get(classShortName)) {
+                                        additions += "[" + classShortName
+                                                + "] uses -.->";
+                                        if (map.get(foo))
+                                            additions += "[<<interface>>;" + foo
+                                                    + "]";
+                                        else
+                                            additions += "[" + foo + "]";
+                                        additions += ",";
+                                    }
+                                }
+                            }
+                        }
+                        methods += "):" + md.getType();
+                        nextParam = true;
+                    }
+                }
+            }
+        }
+        // Parsing Fields
+        boolean nextField = false;
+        for (Object o : ((TypeDeclaration) node).getMembers()) {
+            BodyDeclaration<?> bd = (BodyDeclaration<?>) o;
+            if (bd instanceof FieldDeclaration) {
+                FieldDeclaration fd = ((FieldDeclaration) bd);
+                PrettyPrinterConfiguration conf = new PrettyPrinterConfiguration();
+                conf.setPrintComments(false);
+                String fieldScope = aToSymScope(
+                        bd.toString(conf).substring(0,
+                                bd.toString(conf).indexOf(" ")));
+                String fieldClass = changeBrackets(fd.getElementType().toString());
+                String fieldName = fd.getChildNodes().get(0).toString();
+                if (fieldName.contains("="))
+                    fieldName = fd.getChildNodes().get(0).toString()
+                            .substring(0, fd.getChildNodes().get(0)
+                                    .toString().indexOf("=") - 1);
+                // Change scope of getter, setters
+                if (fieldScope.equals("-")
+                        && makeFieldPublic.contains(fieldName.toLowerCase())) {
+                    fieldScope = "+";
+                }
+                String getDepen = "";
+                boolean getDepenMultiple = false;
+                if (fieldClass.contains("(")) {
+                    getDepen = fieldClass.substring(fieldClass.indexOf("(") + 1,
+                            fieldClass.indexOf(")"));
+                    getDepenMultiple = true;
+                } else if (map.containsKey(fieldClass)) {
+                    getDepen = fieldClass;
+                }
+                if (getDepen.length() > 0 && map.containsKey(getDepen)) {
+                    String connection = "-";
+
+                    if (mapClassConn
+                            .containsKey(getDepen + "-" + classShortName)) {
+                        connection = mapClassConn
+                                .get(getDepen + "-" + classShortName);
+                        if (getDepenMultiple)
+                            connection = "*" + connection;
+                        mapClassConn.put(getDepen + "-" + classShortName,
+                                connection);
+                    } else {
+                        if (getDepenMultiple)
+                            connection += "*";
+                        mapClassConn.put(classShortName + "-" + getDepen,
+                                connection);
+                    }
+                }
+                if (fieldScope == "+" || fieldScope == "-") {
+                    if (nextField)
+                        fields += ";";
+                    fields += fieldScope + fieldName + ":" + fieldClass;
+                    nextField = true;
+                }
+            }
+
+        }
+        // Check extends, implements
+        if (coi.getExtendedTypes() != null && coi.getExtendedTypes().size() != 0) {
+            List<ClassOrInterfaceType> classesList = (List<ClassOrInterfaceType>) coi
+                    .getExtendedTypes();
+            for(ClassOrInterfaceType extendClasses : classesList){
+                additions += "[" + classShortName + "]" + "-^" + "[" + extendClasses.getElementType() + "]";
+                additions += ",";
+            }
+        }
+        if (coi.getImplementedTypes() != null && coi.getImplementedTypes().size() != 0) {
+            List<ClassOrInterfaceType> interfaceList = (List<ClassOrInterfaceType>) coi
+                    .getImplementedTypes();
+            for (ClassOrInterfaceType intface : interfaceList) {
+                additions += "[" + classShortName + "]" + "-.-^" + "["
+                        + "<<interface>>;" + intface + "]";
+                additions += ",";
+            }
+        }
+        // Combine className, methods and fields
+        result += className;
+        if (!StringUtils.isEmpty(fields)) {
+            result += "|" + changeBrackets(fields);
+        }
+        if (!StringUtils.isEmpty(methods)) {
+            result += "|" + changeBrackets(methods);
+        }
+        result += "]";
+        result += additions;
+        return result;
+    }
 	
 	private String changeBrackets(String foo) {
         foo = foo.replace("[", "(");
