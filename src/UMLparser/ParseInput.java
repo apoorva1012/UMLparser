@@ -3,11 +3,25 @@ package UMLparser;
 public class ParseInput {
 	public static void main(String[] args) throws Exception {
 
-        Parser pe = new Parser("/Users/apoorva/Documents/workspace/UMLParser/tests/uml-parser-test-4", "/Users/apoorva/Downloads/amazingrace/result7");
-        pe.start();
+		char [] diagram = new char[2];
+        diagram[0] = args[0].toCharArray()[0];
+        diagram[1] = args[0].toCharArray()[1];
 
-//        SequenceParser pse = new SequenceParser("/home/techmint/Downloads/MyUMLParser/src/test/java/sequenceDiagramTest1", "Customer", "depositMoney", "/home/techmint/Downloads/MyUMLParser/src/sampleOutput/seq");
-//        pse.start();
-//		
-	}
+        switch (diagram[1]) {
+            case 'c':
+                Parser c = new Parser(args[1],args[2] );
+                c.start();
+                break;
+            case 's':
+                SequenceParser s = new SequenceParser(args[1], "Customer", "depositMoney", args[2]);
+                s.start();
+                break;
+            default:
+                System.out.println("Please use below format for input");
+                System.out.println("For class diagram:");
+                System.out.println("java -jar CMPE202_jar -c <absolute input path in double quotes> <absolute output path in double quotes>");
+                System.out.println("For sequence diagram:");
+                System.out.println("java -jar CMPE202_jar -s <absolute input path in double quotes> <in Class name> <out Class name> <absolute output path in double quotes>");
+        }
+    }	
 }
